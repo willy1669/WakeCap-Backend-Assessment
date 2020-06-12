@@ -40,7 +40,7 @@ export default class HelmetController {
 
       const helmet = await helmetService.findOneAndUpdate(
         { helmetNumber },
-        { state: 'ON' }
+        { status: 'ON' }
       );
 
       if (!helmet) {
@@ -62,10 +62,25 @@ export default class HelmetController {
    * @description Disconnects a running instance of a device
    * @param {*} req
    * @param {*} res
-   * @returns {object} meter
+   * @returns {object} helmet
    */
   static async off(req, res) {
+    const {
+      params: { helmetNumber },
+    } = req;
     awsService.thingShadows.end();
+
+    const helmet = await helmetService.findOneAndUpdate(
+      { helmetNumber },
+      { status: 'OFF' }
+    );
+
+    if (!helmet) {
+      return res.status(404).send({
+        status: false,
+        error: 'Helmet not found.',
+      });
+    }
 
     return res.status(200).json({
       status: true,

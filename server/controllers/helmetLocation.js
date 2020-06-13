@@ -1,85 +1,62 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-unused-vars */
 import geoip from 'geoip-lite';
 import { helmetLocationService } from '../services/helmetLocationService';
-import { helmetService } from '../services/helmetService';
-import ipChecker from '../helpers/getIp';
 import timeChecker from '../helpers/timeChecker';
+import ipChecker from '../helpers/getIp';
 
 /**
  * @class HelmetLocationController
  */
 export default class HelmetLocationController {
   /**
-   * @method createHelmetLocation
-   * @description get coordinate of helmet
-   * @param {*} req
-   * @param {*} res
-   * @returns {object} locationResult
-   */
-  static async createHelmetLocation(req, res) {
-    const {
-      params: { helmetNumber },
-    } = req;
-
-    const helmet = await helmetService.findOneAndPopulate(
-      { helmetNumber },
-      // eslint-disable-next-line no-undef
-      { workerId, worker_id: 'worker_id' }
-    );
-
-    /** get time */
-    const starTime = timeChecker.getTime();
-
-    /** get hemlmet ip  */
-    const getHelmetIp = ipChecker.ipMiddleware(req, res);
-
-    /** get coordinates of helmet from ip */
-    const geo = geoip.lookup(getHelmetIp.clientIp);
-
-    /** assign helmet coordinates */
-    const coordinates = geo.range;
-
-    /** create helmet locate in database */
-    const locationResult = await helmetLocationService.create({
-      coordinates,
-      is_active: helmet.is_active,
-      startTime: starTime,
-      worker_id: helmet.workerId.worker_id,
-    });
-
-    return res.status(200).json({
-      status: true,
-      message: 'Helmet location successfully created',
-      locationResult,
-    });
-  }
-
-  /**
    * @method updateHelmetLocation
-   * @description get coordinate of helmet
+   * @description get coordinate of updated assets
    * @param {*} req
    * @param {*} res
-   * @returns {object} result
+   * @returns {Array} responses
    */
   static async updateHelmetLocation(req, res) {
     /** find all helmet location in database */
     const locationResult = await helmetLocationService.find({
-      is_active: true || false,
+      is_active: true,
     });
 
-    const newTime = Date().getTime();
-    const duration = newTime - locationResult.startTime;
+    const responses = [];
+    let processed = 0;
 
-    /** find and update all  */
-    const result = await helmetLocationService.findAndUpdateMany(
-      {},
-      { duration }
-    );
+    for (const helmetlocation of locationResult) {
+      /** get time */
+      const newTime = timeChecker.getTime();
 
-    return res.status(200).json({
-      status: true,
-      message: 'Helmet location successfully created',
-      result,
-    });
+      /** get hemlmet ip  */
+      const getHelmetIp = ipChecker.ipMiddleware(req, res);
+
+      /** get coordinates of helmet from ip */
+      const geo = geoip.lookup(getHelmetIp.clientIp);
+
+      const duration = newTime - helmetlocation.starTime;
+
+      /** assign helmet coordinates */
+      const newCoordinates = geo.range;
+
+      /** find and update all  */
+      const result = helmetLocationService.findOneAndUpdate(
+        { _id: helmetlocation._id },
+        { coordinates: newCoordinates, duration }
+      );
+      processed++;
+
+      responses.push(result);
+
+      if (processed === locationResult.length) {
+        return res.status(200).json({
+          status: true,
+          message: 'Helmet locations successfully updated',
+          responses,
+        });
+      }
+    }
   }
 }

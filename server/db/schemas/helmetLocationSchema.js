@@ -18,8 +18,8 @@ const helmetLocationSchema = new Schema(
     },
     is_active: {
       type: String,
-      enum: ['True', 'False'],
-      default: 'False',
+      enum: [true, false],
+      default: false,
     },
     startTime: { type: Date },
     endTime: { type: Date },

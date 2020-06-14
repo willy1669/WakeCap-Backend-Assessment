@@ -1,0 +1,21 @@
+version: "3"
+services:
+
+    web:
+        container_name: wake_cap_project
+        environment: 
+            NODE_ENV: development
+            PORT: 3000
+        build: .
+        ports: 
+            - "3000:3000"
+        volumes: 
+            - .:/home/node/src
+            - /home/node/src/node_modules
+        links:
+          - db
+        environment: 
+            TEST_MONGODB_URL: mongodb://db:27017
+    db: 
+       image: mongo:3
+            

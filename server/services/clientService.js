@@ -14,4 +14,4 @@ export default class ClientService extends BaseService {
   }
 }
 
-export const clienttService = new ClientService();
+export const clientService = new ClientService();

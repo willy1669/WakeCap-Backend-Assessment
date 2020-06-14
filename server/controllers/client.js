@@ -1,25 +1,27 @@
-import { authService } from '../services/authService';
+import { clientService } from '../services/clientService';
 
 /**
- * @class AuthController
+ * @class ClientController
  */
-export default class AuthController {
+export default class ClientController {
   /**
-   * @method register
+   * @method createClientName
    * @description registers a new client with their name.
    * @param {*} req
    * @param {*} res
-   * @returns {object} registered user
+   * @returns {object} registered client
    */
   static async createClientName(req, res) {
-    const { name } = req.body;
+    const {
+      body: { name },
+    } = req;
 
-    const user = await authService.create({ name });
+    const client = await clientService.create({ name });
 
     return res.status(200).json({
       status: true,
       message: 'client name created successfully',
-      user,
+      client,
     });
   }
 }

@@ -14,9 +14,11 @@ COPY  --chown=node:node . .
 
 RUN npm ci
 
+RUN npm install --save-dev cross-env
+
 EXPOSE 3000 
 
-CMD ["node", "app.js"]
+CMD ["npm", "start"]
 
 
 

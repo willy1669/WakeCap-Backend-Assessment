@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-// HELMET SCHEMA
+/** HELMET SCHEMA */
 const helmetSchema = new Schema(
   {
     helmetNumber: {
@@ -27,5 +27,8 @@ const helmetSchema = new Schema(
     timestamps: true,
   }
 );
+
+/** create index for schema */
+helmetSchema.index({ helmetNumber: 1 });
 
 export default helmetSchema;

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-// HELMET LOCATION SCHEMA
+/** HELMET LOCATION SCHEMA */
 const helmetLocationSchema = new Schema(
   {
     coordinates: {
@@ -32,5 +32,8 @@ const helmetLocationSchema = new Schema(
     timestamps: true,
   }
 );
+
+/** create index for schema */
+helmetLocationSchema.index({ is_active: 1 });
 
 export default helmetLocationSchema;

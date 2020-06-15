@@ -1,10 +1,12 @@
 version: "3"
 services:
 
-    web:
-        container_name: wake_cap_project
+    nodejs:
+        container_name: wake_cap_project1
+        env_file: .env
         environment: 
             NODE_ENV: development
+            TEST_MONGODB_URL: mongodb://localhost:27017/wakecap
             PORT: 3000
         build: .
         ports: 

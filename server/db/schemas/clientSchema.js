@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-// CLIENT SCHEMA
+/** HELMET SCHEMA */
 const clientSchema = new Schema(
   {
     clientName: { type: String, required: true },
